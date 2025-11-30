@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Look Up Your Secret Santa Assignment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .hint {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .hint p {
+            margin: 5px 0;
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-lookup {
+            background: #667eea;
+            color: white;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-lookup:hover {
+            background: #5568d3;
+        }
+
+        .btn-lookup:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 10px;
+            display: none;
+            text-align: center;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .result h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .recipient-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #28a745;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎅 Secret Santa</h1>
+        <p class="subtitle">Find out who you're buying for!</p>
+
+        <div class="hint">
+            <p><strong>🎁 Welcome!</strong> Enter your name below to see your Secret Santa assignment.</p>
+            <p><strong>🔒 Remember:</strong> Don't tell anyone who you're buying for!</p>
+        </div>
+
+        <div class="input-group">
+            <label for="nameInput">What's your name?</label>
+            <input
+                type="text"
+                id="nameInput"
+                placeholder="Enter your name..."
+                autofocus
+                onkeypress="if(event.key==='Enter') lookupAssignment()"
+            >
+        </div>
+
+        <button class="btn-lookup" onclick="lookupAssignment()">Find My Assignment</button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Looking up your assignment...</p>
+        </div>
+
+        <div class="result" id="result"></div>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Admin</a>
+        </div>
+    </div>
+
+    <script>
+        // Hardcoded assignments for the Secret Santa group
+        const ASSIGNMENTS = {
+            "Patrick": "Hilary",
+            "Amy": "Steven",
+            "Hilary": "Amy",
+            "Don": "Patrick",
+            "Steven": "Don"
+        };
+
+        /**
+         * Calculate Levenshtein distance between two strings
+         * (minimum number of single-character edits needed to change one word into another)
+         */
+        function levenshteinDistance(str1, str2) {
+            const len1 = str1.length;
+            const len2 = str2.length;
+            const matrix = [];
+
+            for (let i = 0; i <= len1; i++) {
+                matrix[i] = [i];
+            }
+
+            for (let j = 0; j <= len2; j++) {
+                matrix[0][j] = j;
+            }
+
+            for (let i = 1; i <= len1; i++) {
+                for (let j = 1; j <= len2; j++) {
+                    if (str1.charAt(i - 1) === str2.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1, // substitution
+                            matrix[i][j - 1] + 1,     // insertion
+                            matrix[i - 1][j] + 1      // deletion
+                        );
+                    }
+                }
+            }
+
+            return matrix[len1][len2];
+        }
+
+        /**
+         * Normalize a name (remove punctuation, lowercase, trim)
+         */
+        function normalizeName(name) {
+            return name
+                .toLowerCase()
+                .replace(/[^a-z0-9\s]/g, '') // Remove punctuation
+                .trim();
+        }
+
+        /**
+         * Find the best matching name from the assignments
+         */
+        function findBestMatch(inputName) {
+            const normalizedInput = normalizeName(inputName);
+            const participants = Object.keys(ASSIGNMENTS);
+
+            let bestMatch = null;
+            let bestDistance = Infinity;
+
+            for (const participant of participants) {
+                const normalizedParticipant = normalizeName(participant);
+
+                // Exact match (after normalization)
+                if (normalizedInput === normalizedParticipant) {
+                    return participant;
+                }
+
+                // Calculate edit distance
+                const distance = levenshteinDistance(normalizedInput, normalizedParticipant);
+
+                // Allow up to 2 character differences for small names, 3 for longer
+                const maxAllowedDistance = participant.length <= 4 ? 1 : 2;
+
+                if (distance < bestDistance && distance <= maxAllowedDistance) {
+                    bestDistance = distance;
+                    bestMatch = participant;
+                }
+            }
+
+            return bestMatch;
+        }
+
+        function lookupAssignment() {
+            const nameInput = document.getElementById('nameInput');
+            const loadingDiv = document.getElementById('loading');
+            const resultDiv = document.getElementById('result');
+            const inputName = nameInput.value.trim();
+
+            if (!inputName) {
+                showResult('error', 'Please enter your name!');
+                return;
+            }
+
+            // Show loading
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+
+            // Simulate a small delay for UX
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+
+                const matchedName = findBestMatch(inputName);
+
+                if (matchedName) {
+                    const recipient = ASSIGNMENTS[matchedName];
+                    showSuccess(matchedName, recipient);
+                } else {
+                    showResult('error',
+                        `Sorry, "${inputName}" is not in our Secret Santa list. ` +
+                        `Please check your spelling or contact the organizer.`
+                    );
+                }
+            }, 500);
+        }
+
+        function showSuccess(gifterName, recipientName) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result success';
+            resultDiv.innerHTML = `
+                <h3>Hello ${gifterName}! 🎅</h3>
+                <p>You are the Secret Santa for:</p>
+                <div class="recipient-name">${recipientName}</div>
+                <p>Remember to keep it a secret! 🤫</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+
+        function showResult(type, message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = `
+                <h3>${type === 'success' ? '✅ Success!' : '❌ Oops!'}</h3>
+                <p>${message}</p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

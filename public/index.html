@@ -247,6 +247,26 @@
             color: #555;
         }
 
+        .participant-link {
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .participant-link:hover {
+            background: #218838;
+        }
+
+        .hint .participant-link {
+            margin-top: 10px;
+        }
+
         .loading {
             display: none;
             text-align: center;
@@ -277,6 +297,7 @@
         <div class="hint">
             <p><strong>📱 Phone Format:</strong> Use UK mobile format: +447XXXXXXXXX</p>
             <p><strong>🔒 Privacy:</strong> Each person will only know who they're buying for, not who's buying for them!</p>
+            <p><strong>🎁 Participant?</strong> <a href="lookup.html" class="participant-link">Look Up Your Assignment →</a></p>
         </div>
 
         <div class="input-group">
