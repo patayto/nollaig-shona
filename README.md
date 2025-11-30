@@ -66,10 +66,12 @@ The app will be available at `http://localhost:3000`
 1. Open `http://localhost:3000` in your browser
 2. Add participants by clicking "Add Person"
 3. Enter each person's name and UK mobile number (format: +447XXXXXXXXX)
-4. Choose whether to send SMS notifications:
-   - **Checked**: Sends SMS to all participants immediately
-   - **Unchecked**: Shows assignments on screen (for testing)
-5. Click "Generate Secret Santa Assignments"
+4. Click "Generate Secret Santa Assignments"
+5. After generation, choose one of two actions:
+   - **🔍 Reveal Assignments (Testing)**: Shows all assignments on screen for verification
+   - **📱 Send via SMS**: Sends assignments to participants via Twilio
+
+This two-step process allows you to verify assignments before sending them out.
 
 ### Phone Number Format
 
@@ -81,7 +83,7 @@ UK mobile numbers must be in international format:
 
 ### `POST /api/generate`
 
-Generate Secret Santa assignments and optionally send via SMS.
+Generate Secret Santa assignments.
 
 **Request Body:**
 ```json
@@ -95,35 +97,54 @@ Generate Secret Santa assignments and optionally send via SMS.
       "name": "Bob",
       "phone": "+447700900002"
     }
-  ],
-  "sendSMS": true
+  ]
 }
 ```
 
-**Response (with SMS):**
-```json
-{
-  "success": true,
-  "assignmentsCount": 2,
-  "smsDistribution": {
-    "success": true,
-    "results": [
-      { "name": "Alice", "status": "sent" },
-      { "name": "Bob", "status": "sent" }
-    ]
-  }
-}
-```
-
-**Response (without SMS):**
+**Response:**
 ```json
 {
   "success": true,
   "assignmentsCount": 2,
   "assignments": [
-    { "gifter": "Alice", "recipient": "Bob" },
-    { "gifter": "Bob", "recipient": "Alice" }
+    {
+      "gifter": { "id": "person-0", "name": "Alice", "phone": "+447700900001" },
+      "recipient": { "id": "person-1", "name": "Bob", "phone": "+447700900002" }
+    },
+    {
+      "gifter": { "id": "person-1", "name": "Bob", "phone": "+447700900002" },
+      "recipient": { "id": "person-0", "name": "Alice", "phone": "+447700900001" }
+    }
   ]
+}
+```
+
+### `POST /api/send-sms`
+
+Send Secret Santa assignments via SMS using Twilio.
+
+**Request Body:**
+```json
+{
+  "assignments": [
+    {
+      "gifter": { "id": "person-0", "name": "Alice", "phone": "+447700900001" },
+      "recipient": { "id": "person-1", "name": "Bob", "phone": "+447700900002" }
+    }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "smsDistribution": {
+    "success": true,
+    "results": [
+      { "name": "Alice", "status": "sent" }
+    ]
+  }
 }
 ```
 
@@ -196,6 +217,54 @@ nollaig-shona/
 └── README.md
 ```
 
+## Deployment to Vercel
+
+This app is configured for easy deployment to Vercel.
+
+### Prerequisites
+
+1. A [Vercel account](https://vercel.com) (free tier available)
+2. A [Twilio account](https://www.twilio.com/try-twilio) with UK phone number
+3. Your GitHub repository pushed to GitHub
+
+### Deploy Steps
+
+1. **Push your code to GitHub**
+   ```bash
+   git push origin main
+   ```
+
+2. **Import to Vercel**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Click "Add New Project"
+   - Import your `nollaig-shona` repository
+   - Vercel will auto-detect the settings
+
+3. **Configure Environment Variables**
+
+   In the Vercel project settings, add these environment variables:
+
+   | Variable | Value |
+   |----------|-------|
+   | `TWILIO_ACCOUNT_SID` | Your Twilio Account SID |
+   | `TWILIO_AUTH_TOKEN` | Your Twilio Auth Token |
+   | `TWILIO_PHONE_NUMBER` | Your Twilio UK phone number (e.g., +447700900123) |
+
+4. **Deploy**
+   - Click "Deploy"
+   - Vercel will build and deploy your app
+   - You'll get a URL like `https://nollaig-shona.vercel.app`
+
+### Automatic Deployments
+
+Once set up, Vercel will automatically deploy:
+- Every push to `main` branch → Production
+- Every pull request → Preview deployment
+
+### Custom Domain (Optional)
+
+In Vercel project settings → Domains, you can add a custom domain.
+
 ## Troubleshooting
 
 ### SMS Not Sending
@@ -213,6 +282,13 @@ rm -rf dist node_modules
 npm install
 npm run build
 ```
+
+### Vercel Deployment Issues
+
+- Check build logs in Vercel dashboard
+- Ensure all environment variables are set
+- Verify Node.js version compatibility (>=18.x)
+- Check that `dist/` folder is created during build
 
 ## License
 
