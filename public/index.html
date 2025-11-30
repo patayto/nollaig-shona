@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nollaig Shona - Secret Santa Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .person-entry {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .person-entry:hover {
+            background: #e9ecef;
+        }
+
+        input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-remove:hover {
+            background: #c82333;
+        }
+
+        .btn-add {
+            background: #28a745;
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            background: #218838;
+        }
+
+        .btn-generate {
+            background: #667eea;
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+            padding: 16px;
+            font-size: 1.2em;
+        }
+
+        .btn-generate:hover {
+            background: #5568d3;
+        }
+
+        .btn-generate:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border: 2px solid #ffc107;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .result h3 {
+            margin-bottom: 15px;
+        }
+
+        .result-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .result-list li {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+        }
+
+        .hint {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .hint p {
+            margin: 5px 0;
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎅 Nollaig Shona</h1>
+        <p class="subtitle">Secret Santa Gift Exchange Generator</p>
+
+        <div class="hint">
+            <p><strong>📱 Phone Format:</strong> Use UK mobile format: +447XXXXXXXXX</p>
+            <p><strong>🔒 Privacy:</strong> Each person will only know who they're buying for, not who's buying for them!</p>
+        </div>
+
+        <div class="input-group">
+            <h3>Participants</h3>
+            <div id="people-list"></div>
+            <button class="btn-add" onclick="addPerson()">+ Add Person</button>
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="sendSMS" name="sendSMS">
+            <label for="sendSMS">Send SMS notifications to participants (requires Twilio configuration)</label>
+        </div>
+
+        <button class="btn-generate" onclick="generateSecretSanta()">Generate Secret Santa Assignments</button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Generating assignments...</p>
+        </div>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        let personCount = 0;
+
+        function addPerson() {
+            const peopleList = document.getElementById('people-list');
+            const personDiv = document.createElement('div');
+            personDiv.className = 'person-entry';
+            personDiv.id = `person-${personCount}`;
+            personDiv.innerHTML = `
+                <input type="text" placeholder="Name" class="person-name" required>
+                <input type="tel" placeholder="+447XXXXXXXXX" class="person-phone" required>
+                <button class="btn-remove" onclick="removePerson('person-${personCount}')">Remove</button>
+            `;
+            peopleList.appendChild(personDiv);
+            personCount++;
+        }
+
+        function removePerson(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.remove();
+            }
+        }
+
+        async function generateSecretSanta() {
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            const sendSMS = document.getElementById('sendSMS').checked;
+
+            // Collect people data
+            const people = [];
+            const personEntries = document.querySelectorAll('.person-entry');
+
+            for (const entry of personEntries) {
+                const name = entry.querySelector('.person-name').value.trim();
+                const phone = entry.querySelector('.person-phone').value.trim();
+
+                if (!name || !phone) {
+                    showResult('error', 'Please fill in all fields');
+                    return;
+                }
+
+                people.push({ name, phone });
+            }
+
+            if (people.length < 2) {
+                showResult('error', 'You need at least 2 people for Secret Santa!');
+                return;
+            }
+
+            // Show loading
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ people, sendSMS })
+                });
+
+                const data = await response.json();
+                loadingDiv.style.display = 'none';
+
+                if (!response.ok) {
+                    showResult('error', data.error || 'Failed to generate assignments');
+                    return;
+                }
+
+                if (sendSMS) {
+                    const { smsDistribution } = data;
+                    const failedMessages = smsDistribution.results.filter(r => r.status === 'failed');
+
+                    if (failedMessages.length > 0) {
+                        let errorMessage = `SMS sent to ${smsDistribution.results.length - failedMessages.length} people. Failed to send to: `;
+                        errorMessage += failedMessages.map(f => `${f.name} (${f.error})`).join(', ');
+                        showResult('error', errorMessage);
+                    } else {
+                        showResult('success', `🎉 Success! SMS messages sent to all ${data.assignmentsCount} participants!`);
+                    }
+                } else {
+                    let message = `✅ Generated ${data.assignmentsCount} assignments successfully!\n\n`;
+                    message += 'Assignments (for testing - keep these secret!):\n';
+                    const list = data.assignments.map(a => `${a.gifter} → ${a.recipient}`).join('\n');
+                    showResult('success', message, list);
+                }
+
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                showResult('error', 'Network error: ' + error.message);
+            }
+        }
+
+        function showResult(type, message, list = null) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+
+            let html = `<h3>${type === 'success' ? '✅ Success!' : '❌ Error'}</h3>`;
+            html += `<p>${message}</p>`;
+
+            if (list) {
+                html += '<ul class="result-list">';
+                list.split('\n').forEach(item => {
+                    if (item.trim()) {
+                        html += `<li>${item}</li>`;
+                    }
+                });
+                html += '</ul>';
+            }
+
+            resultDiv.innerHTML = html;
+            resultDiv.style.display = 'block';
+        }
+
+        // Add initial people
+        addPerson();
+        addPerson();
+    </script>
+</body>
+</html>
