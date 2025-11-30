@@ -204,26 +204,29 @@ Keep it secret, keep it safe! 🤫
 ```
 nollaig-shona/
 ├── src/
-│   ├── index.ts              # Express server and API
 │   ├── types.ts              # TypeScript type definitions
 │   ├── secretSanta.ts        # Core algorithm
 │   ├── smsDistribution.ts    # Twilio SMS service
 │   └── secretSanta.test.ts   # Unit tests
+├── netlify/
+│   └── functions/
+│       ├── generate.ts       # Serverless function for generating assignments
+│       └── send-sms.ts       # Serverless function for sending SMS
 ├── public/
 │   └── index.html            # Web UI
 ├── package.json
 ├── tsconfig.json
-├── .env                      # Your configuration (not in repo)
+├── netlify.toml              # Netlify configuration
 └── README.md
 ```
 
-## Deployment to Vercel
+## Deployment to Netlify
 
-This app is configured for easy deployment to Vercel.
+This app is configured for easy deployment to Netlify using serverless functions.
 
 ### Prerequisites
 
-1. A [Vercel account](https://vercel.com) (free tier available)
+1. A [Netlify account](https://netlify.com) (free tier available)
 2. A [Twilio account](https://www.twilio.com/try-twilio) with UK phone number
 3. Your GitHub repository pushed to GitHub
 
@@ -234,15 +237,15 @@ This app is configured for easy deployment to Vercel.
    git push origin main
    ```
 
-2. **Import to Vercel**
-   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
-   - Click "Add New Project"
-   - Import your `nollaig-shona` repository
-   - Vercel will auto-detect the settings
+2. **Import to Netlify**
+   - Go to [Netlify Dashboard](https://app.netlify.com)
+   - Click "Add new site" → "Import an existing project"
+   - Choose GitHub and select your `nollaig-shona` repository
+   - Netlify will auto-detect the settings from `netlify.toml`
 
 3. **Configure Environment Variables**
 
-   In the Vercel project settings, add these environment variables:
+   In Site Settings → Environment Variables, add these:
 
    | Variable | Value |
    |----------|-------|
@@ -251,19 +254,19 @@ This app is configured for easy deployment to Vercel.
    | `TWILIO_PHONE_NUMBER` | Your Twilio UK phone number (e.g., +447700900123) |
 
 4. **Deploy**
-   - Click "Deploy"
-   - Vercel will build and deploy your app
-   - You'll get a URL like `https://nollaig-shona.vercel.app`
+   - Click "Deploy site"
+   - Netlify will build and deploy your app
+   - You'll get a URL like `https://nollaig-shona.netlify.app`
 
 ### Automatic Deployments
 
-Once set up, Vercel will automatically deploy:
+Once set up, Netlify will automatically deploy:
 - Every push to `main` branch → Production
-- Every pull request → Preview deployment
+- Every pull request → Deploy preview
 
 ### Custom Domain (Optional)
 
-In Vercel project settings → Domains, you can add a custom domain.
+In Site Settings → Domain management, you can add a custom domain.
 
 ## Troubleshooting
 
@@ -283,12 +286,12 @@ npm install
 npm run build
 ```
 
-### Vercel Deployment Issues
+### Netlify Deployment Issues
 
-- Check build logs in Vercel dashboard
-- Ensure all environment variables are set
+- Check build logs in Netlify dashboard (Site Settings → Deploys)
+- Ensure all environment variables are set (Site Settings → Environment Variables)
 - Verify Node.js version compatibility (>=18.x)
-- Check that `dist/` folder is created during build
+- Check that Netlify Functions are building correctly (netlify/functions/)
 
 ## License
 
