@@ -1,5 +1,4 @@
 [build]
-  command = "npm run build"
   functions = "netlify/functions"
   publish = "public"
 
@@ -9,5 +8,5 @@
   status = 200
 
 [dev]
-  command = "npm run dev"
-  port = 3000
+  publish = "public"
+  targetPort = 8888

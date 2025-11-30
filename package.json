@@ -5,9 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx src/index.ts",
+    "dev": "netlify dev",
     "test": "vitest",
     "test:coverage": "vitest --coverage"
   },

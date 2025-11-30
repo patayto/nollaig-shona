@@ -19,22 +19,20 @@ A web-based Secret Santa gift exchange organizer with automated SMS distribution
 - npm or yarn
 - Twilio account (for SMS sending)
 
-## Installation
+## Local Development
+
+### Installation
 
 ```bash
 # Install dependencies
 npm install
-
-# Build the TypeScript code
-npm run build
 ```
 
-## Configuration
+### Configuration
 
 Create a `.env` file in the root directory:
 
 ```env
-PORT=3000
 TWILIO_ACCOUNT_SID=your_account_sid_here
 TWILIO_AUTH_TOKEN=your_auth_token_here
 TWILIO_PHONE_NUMBER=+44XXXXXXXXXX
@@ -47,23 +45,23 @@ TWILIO_PHONE_NUMBER=+44XXXXXXXXXX
 3. Find your Account SID and Auth Token in the Twilio console dashboard
 4. Add these to your `.env` file
 
-## Usage
-
-### Start the Server
+### Start the Development Server
 
 ```bash
-# Development mode (with auto-reload)
+# Run with Netlify CLI (simulates serverless functions locally)
 npm run dev
-
-# Production mode
-npm start
 ```
 
-The app will be available at `http://localhost:3000`
+The app will be available at `http://localhost:8888`
+
+The Netlify CLI will automatically:
+- Serve your static files from `public/`
+- Run your serverless functions from `netlify/functions/`
+- Load environment variables from `.env`
 
 ### Using the Web Interface
 
-1. Open `http://localhost:3000` in your browser
+1. Open `http://localhost:8888` in your browser
 2. Add participants by clicking "Add Person"
 3. Enter each person's name and UK mobile number (format: +447XXXXXXXXX)
 4. Click "Generate Secret Santa Assignments"
