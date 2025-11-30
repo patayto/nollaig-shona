@@ -25,11 +25,11 @@ app.get('/api/health', (req, res) => {
 });
 
 /**
- * Generate and distribute Secret Santa assignments
+ * Generate Secret Santa assignments
  */
 app.post('/api/generate', async (req, res) => {
   try {
-    const { people, sendSMS } = req.body;
+    const { people } = req.body;
 
     // Validate input
     if (!Array.isArray(people) || people.length < 2) {
@@ -72,43 +72,74 @@ app.post('/api/generate', async (req, res) => {
       });
     }
 
-    // If SMS sending is requested
-    if (sendSMS) {
-      const smsConfig: SMSConfig = {
-        accountSid: process.env.TWILIO_ACCOUNT_SID || '',
-        authToken: process.env.TWILIO_AUTH_TOKEN || '',
-        fromNumber: process.env.TWILIO_PHONE_NUMBER || ''
-      };
-
-      if (!smsConfig.accountSid || !smsConfig.authToken || !smsConfig.fromNumber) {
-        return res.status(500).json({
-          error: 'SMS configuration is incomplete. Check environment variables.'
-        });
+    // Return full assignments to client (client will handle display/SMS)
+    const assignmentData = assignments.map(a => ({
+      gifter: {
+        id: a.gifter.id,
+        name: a.gifter.name,
+        phone: a.gifter.phone
+      },
+      recipient: {
+        id: a.recipient.id,
+        name: a.recipient.name,
+        phone: a.recipient.phone
       }
-
-      const distribution = await distributeViaSMS(assignments, smsConfig);
-
-      return res.json({
-        success: true,
-        assignmentsCount: assignments.length,
-        smsDistribution: distribution
-      });
-    }
-
-    // Return assignments without sending SMS
-    const anonymizedAssignments = assignments.map(a => ({
-      gifter: a.gifter.name,
-      recipient: a.recipient.name
     }));
 
     res.json({
       success: true,
       assignmentsCount: assignments.length,
-      assignments: anonymizedAssignments
+      assignments: assignmentData
     });
 
   } catch (error) {
     console.error('Error generating Secret Santa:', error);
+    res.status(500).json({
+      error: error instanceof Error ? error.message : 'An unknown error occurred'
+    });
+  }
+});
+
+/**
+ * Send SMS notifications for Secret Santa assignments
+ */
+app.post('/api/send-sms', async (req, res) => {
+  try {
+    const { assignments } = req.body;
+
+    if (!Array.isArray(assignments) || assignments.length === 0) {
+      return res.status(400).json({
+        error: 'Assignments are required'
+      });
+    }
+
+    const smsConfig: SMSConfig = {
+      accountSid: process.env.TWILIO_ACCOUNT_SID || '',
+      authToken: process.env.TWILIO_AUTH_TOKEN || '',
+      fromNumber: process.env.TWILIO_PHONE_NUMBER || ''
+    };
+
+    if (!smsConfig.accountSid || !smsConfig.authToken || !smsConfig.fromNumber) {
+      return res.status(500).json({
+        error: 'SMS configuration is incomplete. Check environment variables.'
+      });
+    }
+
+    // Convert plain objects back to Assignment type
+    const typedAssignments = assignments.map((a: any) => ({
+      gifter: a.gifter as Person,
+      recipient: a.recipient as Person
+    }));
+
+    const distribution = await distributeViaSMS(typedAssignments, smsConfig);
+
+    res.json({
+      success: true,
+      smsDistribution: distribution
+    });
+
+  } catch (error) {
+    console.error('Error sending SMS:', error);
     res.status(500).json({
       error: error instanceof Error ? error.message : 'An unknown error occurred'
     });
