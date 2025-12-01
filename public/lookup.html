@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Look Up Your Secret Santa Assignment</title>
+    <title>Secret Santa - Login</title>
     <style>
         * {
             margin: 0;
@@ -23,7 +23,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 500px;
             width: 100%;
             background: white;
             border-radius: 20px;
@@ -45,18 +45,12 @@
             font-size: 1.1em;
         }
 
-        .hint {
-            background: #e7f3ff;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            border-left: 4px solid #667eea;
+        .screen {
+            display: none;
         }
 
-        .hint p {
-            margin: 5px 0;
-            font-size: 0.95em;
-            color: #555;
+        .screen.active {
+            display: block;
         }
 
         .input-group {
@@ -70,7 +64,7 @@
             color: #333;
         }
 
-        input {
+        input[type="text"] {
             width: 100%;
             padding: 15px;
             border: 2px solid #e0e0e0;
@@ -79,13 +73,89 @@
             transition: border-color 0.3s;
         }
 
-        input:focus {
+        input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
         }
 
-        .btn-lookup {
+        .pin-display {
+            width: 100%;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 2em;
+            text-align: center;
+            letter-spacing: 0.5em;
+            font-family: monospace;
+            background: #f8f9fa;
+            margin-bottom: 20px;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pin-dots {
+            display: flex;
+            gap: 15px;
+        }
+
+        .pin-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e0e0e0;
+        }
+
+        .pin-dot.filled {
             background: #667eea;
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .numpad-btn {
+            padding: 20px;
+            font-size: 1.5em;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .numpad-btn:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+
+        .numpad-btn:active {
+            transform: scale(0.95);
+            background: #667eea;
+            color: white;
+        }
+
+        .numpad-btn.delete {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .numpad-btn.delete:hover {
+            background: #c82333;
+        }
+
+        .numpad-btn.zero {
+            grid-column: 2;
+        }
+
+        .btn-submit {
+            background: #28a745;
             color: white;
             width: 100%;
             padding: 16px;
@@ -95,265 +165,259 @@
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
+            margin-top: 10px;
         }
 
-        .btn-lookup:hover {
-            background: #5568d3;
+        .btn-submit:hover {
+            background: #218838;
         }
 
-        .btn-lookup:disabled {
+        .btn-submit:disabled {
             background: #ccc;
             cursor: not-allowed;
         }
 
-        .result {
-            margin-top: 30px;
-            padding: 25px;
-            border-radius: 10px;
-            display: none;
-            text-align: center;
-        }
-
-        .result.success {
-            background: #d4edda;
-            border: 2px solid #28a745;
-            color: #155724;
-        }
-
-        .result.error {
+        .error-message {
             background: #f8d7da;
             border: 2px solid #dc3545;
             color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
         }
 
-        .result h3 {
-            margin-bottom: 15px;
-            font-size: 1.5em;
+        .error-message.show {
+            display: block;
+        }
+
+        .recipient-screen {
+            text-align: center;
         }
 
         .recipient-name {
-            font-size: 2.5em;
+            font-size: 3em;
             font-weight: bold;
             color: #28a745;
+            margin: 30px 0;
+            padding: 30px;
+            background: #d4edda;
+            border-radius: 15px;
+            border: 3px solid #28a745;
+        }
+
+        .message {
+            font-size: 1.2em;
+            color: #666;
             margin: 20px 0;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
         }
 
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .back-link {
-            text-align: center;
+        .btn-logout {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
             margin-top: 20px;
         }
 
-        .back-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
+        .btn-logout:hover {
+            background: #5568d3;
         }
 
-        .back-link a:hover {
-            text-decoration: underline;
+        .welcome-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎅 Secret Santa</h1>
-        <p class="subtitle">Find out who you're buying for!</p>
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen active">
+            <h1>🎅 Nollaig Shona</h1>
+            <p class="subtitle">Secret Santa Login</p>
 
-        <div class="hint">
-            <p><strong>🎁 Welcome!</strong> Enter your name below to see your Secret Santa assignment.</p>
-            <p><strong>🔒 Remember:</strong> Don't tell anyone who you're buying for!</p>
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="input-group">
+                <label for="nameInput">Your Name</label>
+                <input
+                    type="text"
+                    id="nameInput"
+                    placeholder="Enter your name..."
+                    autocomplete="off"
+                    autofocus
+                >
+            </div>
+
+            <div class="input-group">
+                <label>Your 4-Digit PIN</label>
+                <div class="pin-display">
+                    <div class="pin-dots">
+                        <div class="pin-dot" id="dot1"></div>
+                        <div class="pin-dot" id="dot2"></div>
+                        <div class="pin-dot" id="dot3"></div>
+                        <div class="pin-dot" id="dot4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="numpad">
+                <button class="numpad-btn" onclick="addDigit('1')">1</button>
+                <button class="numpad-btn" onclick="addDigit('2')">2</button>
+                <button class="numpad-btn" onclick="addDigit('3')">3</button>
+                <button class="numpad-btn" onclick="addDigit('4')">4</button>
+                <button class="numpad-btn" onclick="addDigit('5')">5</button>
+                <button class="numpad-btn" onclick="addDigit('6')">6</button>
+                <button class="numpad-btn" onclick="addDigit('7')">7</button>
+                <button class="numpad-btn" onclick="addDigit('8')">8</button>
+                <button class="numpad-btn" onclick="addDigit('9')">9</button>
+                <button class="numpad-btn delete" onclick="deleteDigit()">←</button>
+                <button class="numpad-btn zero" onclick="addDigit('0')">0</button>
+                <button class="numpad-btn delete" onclick="clearPin()">C</button>
+            </div>
+
+            <button class="btn-submit" id="loginBtn" onclick="login()" disabled>
+                Enter
+            </button>
         </div>
 
-        <div class="input-group">
-            <label for="nameInput">What's your name?</label>
-            <input
-                type="text"
-                id="nameInput"
-                placeholder="Enter your name..."
-                autofocus
-                onkeypress="if(event.key==='Enter') lookupAssignment()"
-            >
-        </div>
-
-        <button class="btn-lookup" onclick="lookupAssignment()">Find My Assignment</button>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Looking up your assignment...</p>
-        </div>
-
-        <div class="result" id="result"></div>
-
-        <div class="back-link">
-            <a href="index.html">← Back to Admin</a>
+        <!-- Recipient Screen -->
+        <div id="recipientScreen" class="screen recipient-screen">
+            <div class="welcome-icon">🎁</div>
+            <h1>Hello <span id="userName"></span>!</h1>
+            <p class="message">You are the Secret Santa for:</p>
+            <div class="recipient-name" id="recipientName"></div>
+            <p class="message">Remember to keep it a secret! 🤫</p>
+            <button class="btn-logout" onclick="logout()">← Back to Login</button>
         </div>
     </div>
 
     <script>
-        // Hardcoded assignments for the Secret Santa group
-        const ASSIGNMENTS = {
-            "Patrick": "Hilary",
-            "Amy": "Steven",
-            "Hilary": "Amy",
-            "Don": "Patrick",
-            "Steven": "Don"
+        // Credentials: { name: { pin, recipient } }
+        const CREDENTIALS = {
+            "Patrick": { pin: "1030", recipient: "Hilary" },
+            "Hilary": { pin: "3566", recipient: "Don" },
+            "Don": { pin: "3372", recipient: "Patrick" },
+            "Amy": { pin: "9805", recipient: "Steven" },
+            "Steven": { pin: "8600", recipient: "Amy" },
         };
 
-        /**
-         * Calculate Levenshtein distance between two strings
-         * (minimum number of single-character edits needed to change one word into another)
-         */
-        function levenshteinDistance(str1, str2) {
-            const len1 = str1.length;
-            const len2 = str2.length;
-            const matrix = [];
+        let currentPin = '';
 
-            for (let i = 0; i <= len1; i++) {
-                matrix[i] = [i];
-            }
-
-            for (let j = 0; j <= len2; j++) {
-                matrix[0][j] = j;
-            }
-
-            for (let i = 1; i <= len1; i++) {
-                for (let j = 1; j <= len2; j++) {
-                    if (str1.charAt(i - 1) === str2.charAt(j - 1)) {
-                        matrix[i][j] = matrix[i - 1][j - 1];
-                    } else {
-                        matrix[i][j] = Math.min(
-                            matrix[i - 1][j - 1] + 1, // substitution
-                            matrix[i][j - 1] + 1,     // insertion
-                            matrix[i - 1][j] + 1      // deletion
-                        );
-                    }
-                }
-            }
-
-            return matrix[len1][len2];
-        }
-
-        /**
-         * Normalize a name (remove punctuation, lowercase, trim)
-         */
         function normalizeName(name) {
-            return name
-                .toLowerCase()
-                .replace(/[^a-z0-9\s]/g, '') // Remove punctuation
-                .trim();
+            return name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
         }
 
-        /**
-         * Find the best matching name from the assignments
-         */
-        function findBestMatch(inputName) {
-            const normalizedInput = normalizeName(inputName);
-            const participants = Object.keys(ASSIGNMENTS);
+        function addDigit(digit) {
+            if (currentPin.length < 4) {
+                currentPin += digit;
+                updatePinDisplay();
+                updateLoginButton();
+            }
+        }
 
-            let bestMatch = null;
-            let bestDistance = Infinity;
+        function deleteDigit() {
+            if (currentPin.length > 0) {
+                currentPin = currentPin.slice(0, -1);
+                updatePinDisplay();
+                updateLoginButton();
+            }
+        }
 
-            for (const participant of participants) {
-                const normalizedParticipant = normalizeName(participant);
+        function clearPin() {
+            currentPin = '';
+            updatePinDisplay();
+            updateLoginButton();
+        }
 
-                // Exact match (after normalization)
-                if (normalizedInput === normalizedParticipant) {
-                    return participant;
+        function updatePinDisplay() {
+            for (let i = 1; i <= 4; i++) {
+                const dot = document.getElementById(`dot${i}`);
+                if (i <= currentPin.length) {
+                    dot.classList.add('filled');
+                } else {
+                    dot.classList.remove('filled');
                 }
+            }
+        }
 
-                // Calculate edit distance
-                const distance = levenshteinDistance(normalizedInput, normalizedParticipant);
+        function updateLoginButton() {
+            const nameInput = document.getElementById('nameInput');
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = !(nameInput.value.trim() && currentPin.length === 4);
+        }
 
-                // Allow up to 2 character differences for small names, 3 for longer
-                const maxAllowedDistance = participant.length <= 4 ? 1 : 2;
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 3000);
+        }
 
-                if (distance < bestDistance && distance <= maxAllowedDistance) {
-                    bestDistance = distance;
-                    bestMatch = participant;
+        function login() {
+            const nameInput = document.getElementById('nameInput');
+            const inputName = nameInput.value.trim();
+            const normalizedInput = normalizeName(inputName);
+
+            // Find matching user
+            let matchedUser = null;
+            for (const [name, data] of Object.entries(CREDENTIALS)) {
+                if (normalizeName(name) === normalizedInput) {
+                    matchedUser = { name, data };
+                    break;
                 }
             }
 
-            return bestMatch;
-        }
-
-        function lookupAssignment() {
-            const nameInput = document.getElementById('nameInput');
-            const loadingDiv = document.getElementById('loading');
-            const resultDiv = document.getElementById('result');
-            const inputName = nameInput.value.trim();
-
-            if (!inputName) {
-                showResult('error', 'Please enter your name!');
+            if (!matchedUser) {
+                showError(`"${inputName}" is not in our Secret Santa group.`);
+                clearPin();
                 return;
             }
 
-            // Show loading
-            loadingDiv.style.display = 'block';
-            resultDiv.style.display = 'none';
+            // Check PIN
+            if (matchedUser.data.pin !== currentPin) {
+                showError('Incorrect PIN. Please try again.');
+                clearPin();
+                return;
+            }
 
-            // Simulate a small delay for UX
-            setTimeout(() => {
-                loadingDiv.style.display = 'none';
-
-                const matchedName = findBestMatch(inputName);
-
-                if (matchedName) {
-                    const recipient = ASSIGNMENTS[matchedName];
-                    showSuccess(matchedName, recipient);
-                } else {
-                    showResult('error',
-                        `Sorry, "${inputName}" is not in our Secret Santa list. ` +
-                        `Please check your spelling or contact the organizer.`
-                    );
-                }
-            }, 500);
+            // Success! Show recipient
+            showRecipient(matchedUser.name, matchedUser.data.recipient);
         }
 
-        function showSuccess(gifterName, recipientName) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.className = 'result success';
-            resultDiv.innerHTML = `
-                <h3>Hello ${gifterName}! 🎅</h3>
-                <p>You are the Secret Santa for:</p>
-                <div class="recipient-name">${recipientName}</div>
-                <p>Remember to keep it a secret! 🤫</p>
-            `;
-            resultDiv.style.display = 'block';
+        function showRecipient(userName, recipientName) {
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('recipientName').textContent = recipientName;
+            document.getElementById('loginScreen').classList.remove('active');
+            document.getElementById('recipientScreen').classList.add('active');
         }
 
-        function showResult(type, message) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.className = `result ${type}`;
-            resultDiv.innerHTML = `
-                <h3>${type === 'success' ? '✅ Success!' : '❌ Oops!'}</h3>
-                <p>${message}</p>
-            `;
-            resultDiv.style.display = 'block';
+        function logout() {
+            document.getElementById('nameInput').value = '';
+            currentPin = '';
+            updatePinDisplay();
+            updateLoginButton();
+            document.getElementById('recipientScreen').classList.remove('active');
+            document.getElementById('loginScreen').classList.add('active');
         }
+
+        // Listen for name input changes
+        document.getElementById('nameInput').addEventListener('input', updateLoginButton);
+
+        // Allow Enter key to submit
+        document.getElementById('nameInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && currentPin.length === 4) {
+                login();
+            }
+        });
     </script>
 </body>
 </html>
