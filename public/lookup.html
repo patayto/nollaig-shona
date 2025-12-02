@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secret Santa - Login</title>
+    <title>🎅 Nollaig Shona - Secret Santa</title>
     <style>
         * {
             margin: 0;
@@ -12,14 +12,44 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #165B33 0%, #BB2528 50%, #146B3A 100%);
             min-height: 100vh;
             padding: 20px;
             color: #333;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Snowflake Animation */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            opacity: 0.8;
+            pointer-events: none;
+            animation: fall linear infinite;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes fall {
+            0% {
+                top: -10%;
+                opacity: 0.8;
+            }
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(50px); }
         }
 
         .container {
@@ -28,21 +58,49 @@
             background: white;
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.3);
+            border: 3px solid #FFD700;
+            position: relative;
+            z-index: 10;
+        }
+
+        .santa-image {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .santa-image img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #FFD700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
 
         h1 {
             text-align: center;
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            background: linear-gradient(45deg, #BB2528, #146B3A, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+            font-size: 2.8em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
         }
 
         .subtitle {
             text-align: center;
-            color: #666;
+            color: #BB2528;
             margin-bottom: 30px;
-            font-size: 1.1em;
+            font-size: 1.3em;
+            font-weight: bold;
         }
 
         .screen {
@@ -61,33 +119,36 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #146B3A;
+            font-size: 1.1em;
         }
 
         input[type="text"] {
             width: 100%;
             padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border: 3px solid #FFD700;
+            border-radius: 12px;
             font-size: 1.1em;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
+            background: #FFF;
         }
 
         input[type="text"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #BB2528;
+            box-shadow: 0 0 15px rgba(187, 37, 40, 0.3);
         }
 
         .pin-display {
             width: 100%;
             padding: 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border: 3px solid #FFD700;
+            border-radius: 12px;
             font-size: 2em;
             text-align: center;
             letter-spacing: 0.5em;
             font-family: monospace;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #FFF 0%, #FFF8DC 100%);
             margin-bottom: 20px;
             min-height: 70px;
             display: flex;
@@ -105,10 +166,12 @@
             height: 20px;
             border-radius: 50%;
             background: #e0e0e0;
+            transition: all 0.3s;
         }
 
         .pin-dot.filled {
-            background: #667eea;
+            background: #BB2528;
+            box-shadow: 0 0 10px rgba(187, 37, 40, 0.5);
         }
 
         .numpad {
@@ -121,33 +184,37 @@
         .numpad-btn {
             padding: 20px;
             font-size: 1.5em;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 8px;
+            border: 3px solid #146B3A;
+            background: linear-gradient(135deg, #FFF 0%, #F0FFF0 100%);
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
-            font-weight: 600;
+            font-weight: 700;
+            color: #146B3A;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .numpad-btn:hover {
-            background: #f8f9fa;
-            border-color: #667eea;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-color: #FFD700;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
         }
 
         .numpad-btn:active {
-            transform: scale(0.95);
-            background: #667eea;
-            color: white;
+            transform: scale(0.95) translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .numpad-btn.delete {
-            background: #dc3545;
+            background: linear-gradient(135deg, #BB2528 0%, #8B0000 100%);
             color: white;
-            border-color: #dc3545;
+            border-color: #BB2528;
         }
 
         .numpad-btn.delete:hover {
-            background: #c82333;
+            background: linear-gradient(135deg, #8B0000 0%, #BB2528 100%);
+            transform: translateY(-2px);
         }
 
         .numpad-btn.zero {
@@ -155,97 +222,159 @@
         }
 
         .btn-submit {
-            background: #28a745;
+            background: linear-gradient(135deg, #146B3A 0%, #0D5028 100%);
             color: white;
             width: 100%;
-            padding: 16px;
+            padding: 18px;
             border: none;
-            border-radius: 8px;
-            font-size: 1.2em;
+            border-radius: 12px;
+            font-size: 1.3em;
             cursor: pointer;
             transition: all 0.3s;
-            font-weight: 600;
+            font-weight: 700;
             margin-top: 10px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            border: 2px solid #FFD700;
         }
 
         .btn-submit:hover {
-            background: #218838;
+            background: linear-gradient(135deg, #0D5028 0%, #146B3A 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
         }
 
         .btn-submit:disabled {
             background: #ccc;
             cursor: not-allowed;
+            border-color: #999;
         }
 
         .error-message {
-            background: #f8d7da;
-            border: 2px solid #dc3545;
-            color: #721c24;
+            background: linear-gradient(135deg, #FFF 0%, #FFE4E1 100%);
+            border: 3px solid #BB2528;
+            color: #8B0000;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 20px;
             display: none;
+            font-weight: 600;
         }
 
         .error-message.show {
             display: block;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         .recipient-screen {
             text-align: center;
         }
 
-        .recipient-name {
-            font-size: 3em;
-            font-weight: bold;
-            color: #28a745;
-            margin: 30px 0;
-            padding: 30px;
-            background: #d4edda;
-            border-radius: 15px;
-            border: 3px solid #28a745;
-        }
-
-        .message {
-            font-size: 1.2em;
-            color: #666;
+        .elf-image {
             margin: 20px 0;
         }
 
+        .elf-image img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 4px solid #FFD700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .recipient-name {
+            font-size: 3em;
+            font-weight: bold;
+            color: #BB2528;
+            margin: 20px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 15px;
+            border: 4px solid #BB2528;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .message {
+            font-size: 1.3em;
+            color: #146B3A;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+
         .btn-logout {
-            background: #667eea;
+            background: linear-gradient(135deg, #BB2528 0%, #8B0000 100%);
             color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
+            padding: 14px 28px;
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            font-size: 1.1em;
             cursor: pointer;
             transition: all 0.3s;
-            font-weight: 600;
+            font-weight: 700;
             margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .btn-logout:hover {
-            background: #5568d3;
+            background: linear-gradient(135deg, #8B0000 0%, #BB2528 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
 
         .welcome-icon {
             font-size: 4em;
             margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
     </style>
 </head>
 <body>
+    <!-- Snowflakes -->
+    <script>
+        // Create snowflakes
+        for (let i = 0; i < 50; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            snowflake.style.animationDelay = Math.random() * 5 + 's';
+            snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            document.body.appendChild(snowflake);
+        }
+    </script>
+
     <div class="container">
         <!-- Login Screen -->
         <div id="loginScreen" class="screen active">
-            <h1>🎅 Nollaig Shona</h1>
-            <p class="subtitle">Secret Santa Login</p>
+            <div class="santa-image">
+                <img src="assets/santa.png" alt="Santa">
+            </div>
+
+            <h1>🎄 Nollaig Shona! ✨</h1>
+            <p class="subtitle">Laverty-Weir Secret Santa 2025!</p>
 
             <div class="error-message" id="errorMessage"></div>
 
             <div class="input-group">
-                <label for="nameInput">Your Name</label>
+                <label for="nameInput">🎅 Your Name</label>
                 <input
                     type="text"
                     id="nameInput"
@@ -256,7 +385,7 @@
             </div>
 
             <div class="input-group">
-                <label>Your 4-Digit PIN</label>
+                <label>🔢 Your 4-Digit PIN</label>
                 <div class="pin-display">
                     <div class="pin-dots">
                         <div class="pin-dot" id="dot1"></div>
@@ -283,29 +412,41 @@
             </div>
 
             <button class="btn-submit" id="loginBtn" onclick="login()" disabled>
-                Enter
+                🎁 Enter
             </button>
         </div>
 
         <!-- Recipient Screen -->
         <div id="recipientScreen" class="screen recipient-screen">
             <div class="welcome-icon">🎁</div>
-            <h1>Hello <span id="userName"></span>!</h1>
+            <h1>Hello <span id="userName"></span>! 🎄</h1>
             <p class="message">You are the Secret Santa for:</p>
+
+            <div class="elf-image" id="elfImage"></div>
+
             <div class="recipient-name" id="recipientName"></div>
-            <p class="message">Remember to keep it a secret! 🤫</p>
-            <button class="btn-logout" onclick="logout()">← Back to Login</button>
+            <p class="message">Remember to keep it a secret! 🤫🎅</p>
+            <button class="btn-logout" onclick="logout()">🎄 Back to Login</button>
         </div>
     </div>
 
     <script>
         // Credentials: { name: { pin, recipient } }
         const CREDENTIALS = {
-            "Patrick": { pin: "1030", recipient: "Hilary" },
-            "Hilary": { pin: "3566", recipient: "Don" },
-            "Don": { pin: "3372", recipient: "Patrick" },
-            "Amy": { pin: "9805", recipient: "Steven" },
-            "Steven": { pin: "8600", recipient: "Amy" },
+            "Patrick": { pin: "9660", recipient: "Don" },
+            "Hilary": { pin: "9271", recipient: "Amy" },
+            "Don": { pin: "6542", recipient: "Stephen" },
+            "Amy": { pin: "8683", recipient: "Patrick" },
+            "Stephen": { pin: "9016", recipient: "Hilary" },
+        };
+
+        // Elf images for each person
+        const ELF_IMAGES = {
+            "Patrick": "assets/patrick_elf.png",
+            "Hilary": "assets/hilary_elf.png",
+            "Don": "assets/don_elf.png",
+            "Amy": "assets/amy_elf.png",
+            "Stephen": "assets/stephen_elf.png"
         };
 
         let currentPin = '';
@@ -396,6 +537,12 @@
         function showRecipient(userName, recipientName) {
             document.getElementById('userName').textContent = userName;
             document.getElementById('recipientName').textContent = recipientName;
+
+            // Show elf image for the RECIPIENT
+            const elfImage = ELF_IMAGES[recipientName];
+            const elfDiv = document.getElementById('elfImage');
+            elfDiv.innerHTML = `<img src="${elfImage}" alt="${recipientName} Elf">`;
+
             document.getElementById('loginScreen').classList.remove('active');
             document.getElementById('recipientScreen').classList.add('active');
         }
