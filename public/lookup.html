@@ -2,373 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🎅 Nollaig Shona - Secret Santa</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background: linear-gradient(135deg, #165B33 0%, #BB2528 50%, #146B3A 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Snowflake Animation */
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            color: white;
-            font-size: 1em;
-            opacity: 0.8;
-            pointer-events: none;
-            animation: fall linear infinite;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-        }
-
-        @keyframes fall {
-            0% {
-                top: -10%;
-                opacity: 0.8;
-            }
-            100% {
-                top: 100%;
-                opacity: 0;
-            }
-        }
-
-        @keyframes sway {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(50px); }
-        }
-
-        .container {
-            max-width: 500px;
-            width: 100%;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 215, 0, 0.3);
-            border: 3px solid #FFD700;
-            position: relative;
-            z-index: 10;
-        }
-
-        .santa-image {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .santa-image img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 4px solid #FFD700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-        }
-
-        h1 {
-            text-align: center;
-            background: linear-gradient(45deg, #BB2528, #146B3A, #FFD700);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 5px;
-            font-size: 2.8em;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #BB2528;
-            margin-bottom: 30px;
-            font-size: 1.3em;
-            font-weight: bold;
-        }
-
-        .screen {
-            display: none;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #146B3A;
-            font-size: 1.1em;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 15px;
-            border: 3px solid #FFD700;
-            border-radius: 12px;
-            font-size: 1.1em;
-            transition: all 0.3s;
-            background: #FFF;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #BB2528;
-            box-shadow: 0 0 15px rgba(187, 37, 40, 0.3);
-        }
-
-        .pin-display {
-            width: 100%;
-            padding: 20px;
-            border: 3px solid #FFD700;
-            border-radius: 12px;
-            font-size: 2em;
-            text-align: center;
-            letter-spacing: 0.5em;
-            font-family: monospace;
-            background: linear-gradient(135deg, #FFF 0%, #FFF8DC 100%);
-            margin-bottom: 20px;
-            min-height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .pin-dots {
-            display: flex;
-            gap: 15px;
-        }
-
-        .pin-dot {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            transition: all 0.3s;
-        }
-
-        .pin-dot.filled {
-            background: #BB2528;
-            box-shadow: 0 0 10px rgba(187, 37, 40, 0.5);
-        }
-
-        .numpad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .numpad-btn {
-            padding: 20px;
-            font-size: 1.5em;
-            border: 3px solid #146B3A;
-            background: linear-gradient(135deg, #FFF 0%, #F0FFF0 100%);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 700;
-            color: #146B3A;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .numpad-btn:hover {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            border-color: #FFD700;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-        }
-
-        .numpad-btn:active {
-            transform: scale(0.95) translateY(0);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .numpad-btn.delete {
-            background: linear-gradient(135deg, #BB2528 0%, #8B0000 100%);
-            color: white;
-            border-color: #BB2528;
-        }
-
-        .numpad-btn.delete:hover {
-            background: linear-gradient(135deg, #8B0000 0%, #BB2528 100%);
-            transform: translateY(-2px);
-        }
-
-        .numpad-btn.zero {
-            grid-column: 2;
-        }
-
-        .btn-submit {
-            background: linear-gradient(135deg, #146B3A 0%, #0D5028 100%);
-            color: white;
-            width: 100%;
-            padding: 18px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.3em;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 700;
-            margin-top: 10px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-            border: 2px solid #FFD700;
-        }
-
-        .btn-submit:hover {
-            background: linear-gradient(135deg, #0D5028 0%, #146B3A 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-        }
-
-        .btn-submit:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            border-color: #999;
-        }
-
-        .error-message {
-            background: linear-gradient(135deg, #FFF 0%, #FFE4E1 100%);
-            border: 3px solid #BB2528;
-            color: #8B0000;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: none;
-            font-weight: 600;
-        }
-
-        .error-message.show {
-            display: block;
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        .recipient-screen {
-            text-align: center;
-        }
-
-        .elf-image {
-            margin: 20px 0;
-        }
-
-        .elf-image img {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            border: 4px solid #FFD700;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .recipient-name {
-            font-size: 3em;
-            font-weight: bold;
-            color: #BB2528;
-            margin: 20px 0;
-            padding: 30px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            border-radius: 15px;
-            border: 4px solid #BB2528;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .message {
-            font-size: 1.3em;
-            color: #146B3A;
-            margin: 20px 0;
-            font-weight: 600;
-        }
-
-        .btn-logout {
-            background: linear-gradient(135deg, #BB2528 0%, #8B0000 100%);
-            color: white;
-            padding: 14px 28px;
-            border: 2px solid #FFD700;
-            border-radius: 12px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 700;
-            margin-top: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .btn-logout:hover {
-            background: linear-gradient(135deg, #8B0000 0%, #BB2528 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-        }
-
-        .welcome-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-    </style>
+    <link rel="stylesheet" href="lookup.css">
 </head>
 <body>
-    <!-- Snowflakes -->
-    <script>
-        // Create snowflakes
-        for (let i = 0; i < 50; i++) {
-            const snowflake = document.createElement('div');
-            snowflake.className = 'snowflake';
-            snowflake.innerHTML = '❄';
-            snowflake.style.left = Math.random() * 100 + '%';
-            snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            snowflake.style.animationDelay = Math.random() * 5 + 's';
-            snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
-            document.body.appendChild(snowflake);
-        }
-    </script>
+    <!-- CSS Snowflakes -->
+    <div class="snowflake" aria-hidden="true">❄</div>
+    <div class="snowflake" aria-hidden="true">❄</div>
+    <div class="snowflake" aria-hidden="true">❅</div>
+    <div class="snowflake" aria-hidden="true">❄</div>
+    <div class="snowflake" aria-hidden="true">❅</div>
+    <div class="snowflake" aria-hidden="true">❄</div>
+    <div class="snowflake" aria-hidden="true">❅</div>
+    <div class="snowflake" aria-hidden="true">❄</div>
+    <div class="snowflake" aria-hidden="true">❅</div>
+    <div class="snowflake" aria-hidden="true">❄</div>
+    <div class="snowflake" aria-hidden="true">❅</div>
+    <div class="snowflake" aria-hidden="true">❄</div>
+    <div class="snowflake" aria-hidden="true">❅</div>
+    <div class="snowflake" aria-hidden="true">❄</div>
+    <div class="snowflake" aria-hidden="true">❅</div>
+    <div class="snowflake" aria-hidden="true">❄</div>
+    <div class="snowflake" aria-hidden="true">❅</div>
+    <div class="snowflake" aria-hidden="true">❄</div>
+    <div class="snowflake" aria-hidden="true">❅</div>
+    <div class="snowflake" aria-hidden="true">❄</div>
 
     <div class="container">
         <!-- Login Screen -->
         <div id="loginScreen" class="screen active">
+
+            <h1>🎄 Nollaig Shona! ✨</h1>
+
             <div class="santa-image">
                 <img src="assets/santa.png" alt="Santa">
             </div>
 
-            <h1>🎄 Nollaig Shona! ✨</h1>
             <p class="subtitle">Laverty-Weir Secret Santa 2025!</p>
 
             <div class="error-message" id="errorMessage"></div>
@@ -418,11 +88,16 @@
 
         <!-- Recipient Screen -->
         <div id="recipientScreen" class="screen recipient-screen">
-            <div class="welcome-icon">🎁</div>
             <h1>Hello <span id="userName"></span>! 🎄</h1>
             <p class="message">You are the Secret Santa for:</p>
 
-            <div class="elf-image" id="elfImage"></div>
+            <div class="elf-exchange">
+                <div class="elf-image gifter" id="gifterElfImage"></div>
+                <div class="present-animation">
+                    <div class="present">🎁</div>
+                </div>
+                <div class="elf-image recipient" id="recipientElfImage"></div>
+            </div>
 
             <div class="recipient-name" id="recipientName"></div>
             <p class="message">Remember to keep it a secret! 🤫🎅</p>
@@ -538,10 +213,15 @@
             document.getElementById('userName').textContent = userName;
             document.getElementById('recipientName').textContent = recipientName;
 
-            // Show elf image for the RECIPIENT
-            const elfImage = ELF_IMAGES[recipientName];
-            const elfDiv = document.getElementById('elfImage');
-            elfDiv.innerHTML = `<img src="${elfImage}" alt="${recipientName} Elf">`;
+            // Show elf images for both GIFTER and RECIPIENT
+            const gifterElfImage = ELF_IMAGES[userName];
+            const recipientElfImage = ELF_IMAGES[recipientName];
+
+            const gifterDiv = document.getElementById('gifterElfImage');
+            const recipientDiv = document.getElementById('recipientElfImage');
+
+            gifterDiv.innerHTML = `<img src="${gifterElfImage}" alt="${userName} Elf">`;
+            recipientDiv.innerHTML = `<img src="${recipientElfImage}" alt="${recipientName} Elf">`;
 
             document.getElementById('loginScreen').classList.remove('active');
             document.getElementById('recipientScreen').classList.add('active');
